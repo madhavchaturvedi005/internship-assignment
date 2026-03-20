@@ -14,7 +14,7 @@ services:
   app:
     build: .
     ports:
-      - "5000:5000"   # TCP
+      - "5001:5001"   # TCP
       - "3000:3000"   # HTTP + WebSocket
     env_file:
       - .env
