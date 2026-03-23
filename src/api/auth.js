@@ -6,17 +6,20 @@ const { JWT_SECRET } = require('../config');
 
 const router = express.Router();
 
-// POST /auth/token — generate a test JWT
+// POST /auth/token — validate credentials and return a JWT
 router.post('/token', async (req, res) => {
-  const { email, role } = req.body;
+  const { email, password, role } = req.body;
 
-  if (!email || !['Admin', 'Customer'].includes(role)) {
-    return res.status(400).json({ error: 'email and role (Admin|Customer) required' });
+  if (!email || !password || !['Admin', 'Customer'].includes(role)) {
+    return res.status(400).json({ error: 'email, password, and role (Admin|Customer) required' });
   }
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) return res.status(401).json({ error: 'Invalid password' });
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },

@@ -1,6 +1,6 @@
 const http = require('http');
 const express = require('express');
-const { startTCPServer, loadRegisteredDevices, setBroadcast } = require('./tcp/server');
+const { startTCPServer, loadRegisteredDevices, setBroadcast, flushQueue } = require('./tcp/server');
 const { startWebSocketServer, loadCustomerDevices, broadcast } = require('./websocket/server');
 const authRoutes = require('./api/auth');
 const deviceRoutes = require('./api/devices');
@@ -36,9 +36,10 @@ async function main() {
     console.log(JSON.stringify({ event: 'http_server_started', port: HTTP_PORT }));
   });
 
-  // 7. Graceful shutdown — don't lose in-flight data
+  // 7. Graceful shutdown — flush in-flight queue before exit
   async function shutdown(signal) {
     console.log(JSON.stringify({ event: 'shutdown', signal }));
+    await flushQueue(); // drain any buffered location records
     await prisma.$disconnect();
     process.exit(0);
   }

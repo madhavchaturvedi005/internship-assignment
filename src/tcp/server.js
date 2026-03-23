@@ -139,4 +139,4 @@ function startTCPServer() {
   return server;
 }
 
-module.exports = { startTCPServer, loadRegisteredDevices, setBroadcast, locationQueue };
+module.exports = { startTCPServer, loadRegisteredDevices, setBroadcast, flushQueue, locationQueue };
