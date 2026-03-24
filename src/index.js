@@ -1,5 +1,6 @@
 const http = require('http');
 const express = require('express');
+const cors = require('cors');
 const { startTCPServer, loadRegisteredDevices, setBroadcast, flushQueue } = require('./tcp/server');
 const { startWebSocketServer, loadCustomerDevices, broadcast } = require('./websocket/server');
 const authRoutes = require('./api/auth');
@@ -18,6 +19,7 @@ async function main() {
 
   // 3. Setup Express HTTP server
   const app = express();
+  app.use(cors());
   app.use(express.json());
 
   app.use('/auth', authRoutes);

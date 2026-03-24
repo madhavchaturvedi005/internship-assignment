@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+<script>
+  async function connect() {
+    // Auto-fetch a fresh token every time the page loads
+    const res = await fetch("http://localhost:3000/auth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "admin@fleetpulse.com", password: "admin123", role: "Admin" })
+    });
+    const { token } = await res.json();
+    console.log("Token fetched:", token);
+
+    const socket = io("http://localhost:3000", { query: { token } });
+
+    socket.on("connect", () => console.log("Connected:", socket.id));
+    socket.on("tracker:live", (data) => console.log("Live:", data));
+    socket.on("tracker:unknown", (data) => console.log("Unknown:", data));
+    socket.on("connect_error", (err) => console.error("Error:", err.message));
+    socket.on("disconnect", () => console.log("Disconnected"));
+  }
+
+  connect();
+</script>
+</body>
+</html>

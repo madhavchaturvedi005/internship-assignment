@@ -80,6 +80,8 @@ function handleSocket(socket) {
 
       const parsed = parsePing(line);
 
+      console.log(JSON.stringify({ event: 'packet_received', raw: line }));
+
       if (!parsed) {
         // Malformed packet — log and drop
         console.error(JSON.stringify({ event: 'malformed_packet', raw: line }));
@@ -106,6 +108,7 @@ function handleSocket(socket) {
       // Valid registered device — add to queue and broadcast live
       const timestamp = new Date();
       locationQueue.push({ ...parsed, timestamp });
+      console.log(JSON.stringify({ event: 'broadcasting', imei: parsed.imei, broadcastFnSet: !!broadcastFn }));
 
       if (broadcastFn) {
         broadcastFn('tracker:live', { ...parsed, ignition: parsed.ignition, timestamp });

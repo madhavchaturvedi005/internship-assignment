@@ -64,6 +64,7 @@ function broadcast(event, data) {
 
   io.sockets.sockets.forEach((socket) => {
     const user = socket.user;
+    if (!user) return;
 
     if (user.role === 'Admin') {
       // Admin sees everything
